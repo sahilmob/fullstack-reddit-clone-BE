@@ -42,6 +42,17 @@ class UserResponse {
 
 @Resolver()
 export class UserResolver {
+  @Query(() => User, { nullable: true })
+  async me(@Ctx() { em, req }: ApolloContext) {
+    const userId = req.session!.userId;
+
+    if (!userId) return null;
+
+    const user = await em.findOne(User, { id: userId });
+
+    return user;
+  }
+
   @Mutation(() => UserResponse, { nullable: true })
   async register(
     @Arg("options") options: UsernamePasswordInput,
@@ -82,7 +93,7 @@ export class UserResolver {
   @Query(() => UserResponse)
   async login(
     @Arg("options") options: UsernamePasswordInput,
-    @Ctx() { em }: ApolloContext
+    @Ctx() { em, req }: ApolloContext
   ): Promise<UserResponse> {
     try {
       const user = await em.findOne(User, { username: options.username });
@@ -100,6 +111,9 @@ export class UserResolver {
         return {
           errors: [{ field: "", message: "invalid username or password" }],
         };
+
+      req.session!.userId = user.id;
+
       return { user };
     } catch (error) {
       return error;
