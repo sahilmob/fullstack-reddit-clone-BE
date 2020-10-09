@@ -1,4 +1,4 @@
-import { Arg, Ctx, Int, Query, Resolver } from "type-graphql";
+import { Arg, Ctx, Mutation, Query, Resolver } from "type-graphql";
 
 import { Post } from "../entities/Post";
 import { ApolloContext } from "../types";
@@ -12,11 +12,21 @@ export class PostResolver {
 
   @Query(() => Post, { nullable: true })
   post(
-    @Arg("id", () => Int) id: number,
+    @Arg("id") id: number,
     @Ctx() { em }: ApolloContext
   ): Promise<Post | null> {
     return em.findOne(Post, {
       id,
     });
+  }
+
+  @Mutation(() => Post)
+  async createPost(
+    @Arg("title") title: string,
+    @Ctx() { em }: ApolloContext
+  ): Promise<Post> {
+    const post = em.create(Post, { title });
+    await em.persistAndFlush(post);
+    return post;
   }
 }
