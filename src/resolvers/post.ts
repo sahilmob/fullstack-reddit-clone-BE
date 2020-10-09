@@ -44,4 +44,13 @@ export class PostResolver {
     await em.persistAndFlush(post);
     return post;
   }
+
+  @Mutation(() => Boolean, { nullable: true })
+  async deletePost(
+    @Arg("id") id: number,
+    @Ctx() { em }: ApolloContext
+  ): Promise<boolean> {
+    await em.nativeDelete(Post, { id });
+    return true;
+  }
 }
