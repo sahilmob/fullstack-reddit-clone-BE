@@ -6,7 +6,8 @@
   "scripts": {
     "watch": "tsc -w",
     "dev": "nodemon dist/index.js",
-    "start": "ts-node"
+    "start": "ts-node",
+    "create:migration": "mikro-orm migration:create"
   },
   "keywords": [],
   "author": "",
