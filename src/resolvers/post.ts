@@ -29,4 +29,19 @@ export class PostResolver {
     await em.persistAndFlush(post);
     return post;
   }
+
+  @Mutation(() => Post, { nullable: true })
+  async updatePost(
+    @Arg("id") id: number,
+    @Arg("title") title: string,
+    @Ctx() { em }: ApolloContext
+  ): Promise<Post | null> {
+    const post = await em.findOne(Post, { id });
+
+    if (!post) return null;
+
+    post.title = title;
+    await em.persistAndFlush(post);
+    return post;
+  }
 }
