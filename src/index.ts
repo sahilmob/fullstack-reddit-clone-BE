@@ -19,7 +19,7 @@ const main = async () => {
       validate: false,
     }),
     context: () => ({
-      em: orm.em,
+      em: orm.em.fork(),
     }),
   });
 
