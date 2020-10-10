@@ -87,19 +87,20 @@ export class UserResolver {
       }
       return { errors: [{ field: "", message: "unknown error" }] };
     }
-      
+
     req.session!.userId = user.id;
 
     return { user };
   }
 
-  @Query(() => UserResponse)
+  @Mutation(() => UserResponse)
   async login(
     @Arg("options") options: UsernamePasswordInput,
     @Ctx() { em, req }: ApolloContext
   ): Promise<UserResponse> {
+    let user;
     try {
-      const user = await em.findOne(User, { username: options.username });
+      user = await em.findOne(User, { username: options.username });
       if (!user) {
         return {
           errors: [{ field: "", message: "invalid username or password" }],
@@ -116,10 +117,9 @@ export class UserResolver {
         };
 
       req.session!.userId = user.id;
-
-      return { user };
     } catch (error) {
       return error;
     }
+    return { user };
   }
 }
