@@ -56,7 +56,7 @@ export class UserResolver {
   @Mutation(() => UserResponse, { nullable: true })
   async register(
     @Arg("options") options: UsernamePasswordInput,
-    @Ctx() { em }: ApolloContext
+    @Ctx() { em, req }: ApolloContext
   ): Promise<UserResponse> {
     if (options.username.length <= 2) {
       return {
@@ -87,6 +87,9 @@ export class UserResolver {
       }
       return { errors: [{ field: "", message: "unknown error" }] };
     }
+      
+    req.session!.userId = user.id;
+
     return { user };
   }
 
